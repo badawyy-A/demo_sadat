@@ -1,0 +1,52 @@
+/* src/styles/global.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-md font-medium transition-colors duration-200;
+  }
+  
+  .btn-primary {
+    @apply btn bg-primary hover:bg-primary-dark text-white;
+  }
+  
+  .btn-secondary {
+    @apply btn bg-secondary hover:bg-secondary-dark text-white;
+  }
+  
+  .btn-accent {
+    @apply btn bg-accent hover:bg-accent-dark text-white;
+  }
+  
+  .btn-outline {
+    @apply btn border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700;
+  }
+  
+  .card {
+    @apply bg-card-light dark:bg-card-dark rounded-lg shadow-md p-6;
+  }
+  
+  .form-input {
+    @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
+    bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100
+    focus:outline-none focus:ring-2 focus:ring-primary-light;
+  }
+  
+  .form-label {
+    @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1;
+  }
+  
+  .form-group {
+    @apply mb-4;
+  }
+  
+  .workout-card {
+    @apply card border-l-4 border-primary mb-4;
+  }
+  
+  .stat-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent-light text-accent-dark;
+  }
+}
