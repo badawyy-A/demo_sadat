@@ -83,6 +83,24 @@ npm run test
 yarn test
 ```
 
+## 🚢 Docker
+
+This project includes a Dockerfile for containerization.
+
+Build the Docker image:
+
+```bash
+docker build -t frontend-app .
+```
+
+Run the container:
+
+```bash
+docker run -p 8080:80 frontend-app
+```
+
+The application will be available at `http://localhost:8080`.
+
 ## 📚 Tech Stack
 
 - [React](https://reactjs.org/)
