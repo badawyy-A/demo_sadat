@@ -170,7 +170,7 @@ class PushupAnalyzer:
         self.check_performance("hip")
         self.pushup_cycle_speed()  
         self.reps = len(self.df[self.df['pushup_cycle_duration'] != 0])
-        return self.reps , self.df['pushup_cycle_duration'].sum().round(2)
+        return self.reps 
 
 # Usage
 """
@@ -341,7 +341,7 @@ class CurlUpsTest:
         self.plot()
         self.duration_speed_comment()
         self.pushup_cycle_speed()
-        return len(self.df[self.df['cycle_duration'] != 0]), self.df['cycle_duration'].sum().round(2)
+        return len(self.df[self.df['cycle_duration'] != 0])
 
 # Usage example:
 """video_path = "curl/curl_g.mp4"
