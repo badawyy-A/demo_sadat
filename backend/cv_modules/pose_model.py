@@ -132,13 +132,13 @@ def process_video_pose_estimation(video_path, model_path="yolo11x-pose.pt"):
 
       # <--- REPLACE THIS WITH DESIRED OUTPUT CSV PATH
 
-"""video_file = "plate-tapping/plate_21.mp4"  # <--- REPLACE THIS WITH YOUR VIDEO PATH
+"""video_file = "E:/manar/data_science/fixedinternship/CV/club_city_project/flamingo/flagb.mp4"  # <--- REPLACE THIS WITH YOUR VIDEO PATH
 
 pose_df, FPS = process_video_pose_estimation(video_file)
 
 print(pose_df.info())
-print(pose_df.columns)
-"""
+print(pose_df.columns)"""
+
 
 
 

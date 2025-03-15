@@ -125,31 +125,8 @@ print(result)
 
 
 
-# to be updated
-"""class FlamingoBalance:
-    def __init__(self, video_path, threshold_time=0.05):
-        self.video_path = video_path
-        self.df, self.fps = self.process_video_pose_estimation(video_path)
-        
-
-    def balance_loss(self, pose_row, prefered_foot):
-        left_ankle_y = pose_row.get('kp_y15')
-        left_hip_y = pose_row.get('kp_y11')
-        left_knee_y = pose_row.get('kp_y13')
-
-        right_ankle_y = pose_row.get('kp_y16')
-        right_hip_y = pose_row.get('kp_y12')
-        right_knee_y = pose_row.get('kp_y14')
-        # to continue
-
-    
-    def count_falls(self):
-        continue
-"""
-
-
 # another approch
-class FlamingoBalance:
+"""class FlamingoBalance:
     def __init__(self, video_path):
         #self.df , self.fps = process_video_pose_estimation(video_path)  # Work on a copy to avoid modifying the original DataFrame
         try:
@@ -167,7 +144,7 @@ class FlamingoBalance:
 
 
     def detect_peaks_and_valleys(self):
-        """Find peaks (left taps) and valleys (right taps) in the angle data."""
+        #Find peaks (left taps) and valleys (right taps) in the angle data.
         self.peaks, _ = find_peaks(self.df['kp_y15'], prominence= self.prominence_value,height= self.height_value)
         
         # Assign positions based on detected peaks and valleys
@@ -175,7 +152,7 @@ class FlamingoBalance:
         self.df.loc[self.peaks, 'state'] = 'fall'
 
     def plot_peaks(self):
-        """Visualize detected peaks and valleys."""
+        #Visualize detected peaks and valleys.
         plt.figure(figsize=(18, 10))
         plt.plot(self.df['kp_y15'], label='kp_y15')
         plt.plot(self.peaks, self.df['kp_y15'][self.peaks], "x", markersize=10, label="Peaks")
@@ -188,14 +165,135 @@ class FlamingoBalance:
 
     
     def process(self):
-        """Get Falls Count."""
+        # Get Falls Count.
         self.detect_peaks_and_valleys()
         self.plot_peaks()
         self.falls = len(self.df[self.df['state'] == 'fall'])
 
-        return self.falls
+        return self.falls"""
 
-# Example usage:
-"""flamingo_balance = FlamingoBalance(video_path="flamingo/f11_e.mp4")
-fall_count = flamingo_balance.process()
-print(f"Total Falls: {fall_count}")"""
+class FlamingoBalance:
+    def __init__(self,threshold_time=0.05):
+
+        self.start_time = None
+        self.total_time = 0  
+        self.balance_loss_counter = 0  
+        self.in_balance = False
+        self.threshold_time = threshold_time
+
+    def balance_loss(self, pose_row, prefered_foot):
+        left_ankle_y = pose_row.get('kp_y15')
+        left_hip_y = pose_row.get('kp_y11')
+        left_knee_y = pose_row.get('kp_y13')
+
+        right_ankle_y = pose_row.get('kp_y16')
+        right_hip_y = pose_row.get('kp_y12')
+        right_knee_y = pose_row.get('kp_y14')
+
+        if None in (left_ankle_y, left_hip_y, left_knee_y, right_ankle_y, right_hip_y, right_knee_y):
+            return round(self.total_time, 2), self.balance_loss_counter
+
+        if prefered_foot == "Right":
+            supporting_ankle_y, supporting_knee_y, supporting_hip_y = right_ankle_y, right_knee_y, right_hip_y
+            lifted_ankle_y, lifted_knee_y, lifted_hip_y = left_ankle_y, left_knee_y, left_hip_y
+        else:
+            supporting_ankle_y, supporting_knee_y, supporting_hip_y = left_ankle_y, left_knee_y, left_hip_y
+            lifted_ankle_y, lifted_knee_y, lifted_hip_y = right_ankle_y, right_knee_y, right_hip_y
+
+        ##The first condition for the side view videos and the second one for front view videos
+        in_balance_now = (lifted_ankle_y < supporting_ankle_y) and (lifted_ankle_y < lifted_knee_y) or ( (lifted_ankle_y < supporting_ankle_y) and abs(lifted_ankle_y - lifted_knee_y) < 50 )
+
+        if in_balance_now:
+            if not self.in_balance:  
+                self.start_time = time.time()  
+            self.in_balance = True
+        else:
+            if self.in_balance:
+                elapsed_time = time.time() - self.start_time if self.start_time else 0
+                if elapsed_time >= self.threshold_time:
+                    self.total_time += elapsed_time  
+                    self.balance_loss_counter += 1  
+                self.in_balance = False
+                self.start_time = None  
+
+        if self.in_balance and self.start_time:
+            return round(self.total_time + (time.time() - self.start_time), 2), self.balance_loss_counter
+        
+        return round(self.total_time, 2), self.balance_loss_counter
+
+
+
+class FlamingoBalance_Score:
+    def __init__(self, video_path):
+        
+        try:
+            self.pose_df, self.FPS = process_video_pose_estimation(video_path)
+            if self.pose_df.empty:
+                print("⚠️ Warning: The DataFrame is empty! Check process_video_pose_estimation.")
+        except Exception as e:
+            print(f"Error processing video: {e}")
+        self.video_path = video_path
+        #self.pose_csv_path = pose_csv_path
+        self.output_path = 'output_balance_kid4.avi'
+        self.flamingo_balance_test = FlamingoBalance()
+
+        # Load CSV data
+        #self.pose_df = pd.read_csv(self.pose_csv_path)
+        self.loss = 0
+        
+        # Initialize video capture
+        self.cap = cv2.VideoCapture(self.video_path)
+        if not self.cap.isOpened():
+            raise FileNotFoundError("Error: Could not open video file.")
+        
+        self.frame_width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        self.frame_height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        self.fps = int(self.cap.get(cv2.CAP_PROP_FPS))
+        
+        # Initialize video writer
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        self.out = cv2.VideoWriter(self.output_path, fourcc, self.fps, (self.frame_width, self.frame_height))
+        self.frames_count = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+
+    def annotate_frame(self, frame, frame_idx):
+        pose_frame_data = self.pose_df[self.pose_df['frame_idx'] == frame_idx]
+
+        pose_row = pose_frame_data.iloc[0]
+
+            
+        # Get real-time balance tracking
+        total_time, loss_count = self.flamingo_balance_test.balance_loss(pose_row, "Right")
+        
+        if frame_idx == self.frames_count -1:
+            self.loss = loss_count
+            
+
+        return frame    
+    
+    def process(self):
+        frame_idx = 0
+        while True:
+            ret, frame = self.cap.read()
+            if frame_idx == self.frames_count:
+                break
+            frame = self.annotate_frame(frame, frame_idx)
+            self.out.write(frame)
+            frame_idx += 1
+
+        self.cap.release()
+        
+        cv2.destroyAllWindows()
+        return self.loss
+
+# Usage
+# "E:/manar/data_science/fixedinternship/CV/club_city_project/flamingo/f11_e.mp4"  girl
+# "E:/manar/data_science/fixedinternship/CV/club_city_project/flamingo/flagb.mp4"  boy
+
+"""video_annotator = FlamingoBalance_Score(
+    video_path = "E:/manar/data_science/fixedinternship/CV/club_city_project/flamingo/f11_e.mp4"
+)
+fall_count = video_annotator.process()
+print("fall_count: ",fall_count)"""
+
+
