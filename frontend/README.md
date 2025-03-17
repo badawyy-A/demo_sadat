@@ -7,6 +7,7 @@ frontend/
 ├── node_modules/       # Project dependencies
 ├── public/             # Static files served as-is
 ├── src/                # Source code
+│   ├── api/            # API client and endpoints
 │   ├── assets/         # Static assets (images, fonts, etc.)
 │   ├── components/     # Reusable UI components
 │   ├── context/        # React context providers
