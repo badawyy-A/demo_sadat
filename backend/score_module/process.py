@@ -7,18 +7,10 @@ def load_json(filepath):
     with open(filepath, "r") as f:
         return json.load(f)
 
-# Load all reference data once (Improves efficiency)
-REFERENCE_DATA = {
-    "plate": load_json("reference_data/plate.json"),
-    "balance": load_json("reference_data/balance.json"),
-    "curl_up": load_json("reference_data/curl_up.json"),
-    "push_up": load_json("reference_data/pushUp.json"),
-    "run": load_json("reference_data/run.json"),
-    "speed": load_json("reference_data/speed.json"),
-}
+
 
 # Generic processing function
-def process_age_range(input_path, output_path, age_group):
+def process_age_range(input_path, output_path, age_group , REFERENCE_DATA):
     user_data = load_json(input_path)
 
     if age_group == "5-8":
