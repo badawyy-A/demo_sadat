@@ -1,6 +1,7 @@
 from fitness_tests_age_5_8 import *
 from fitness_tests_age_9_18 import *
 import json
+import os
 
 
 def process_age5_8(plate_video_path, flamingo_video_path,output_path, age):
@@ -12,9 +13,8 @@ def process_age5_8(plate_video_path, flamingo_video_path,output_path, age):
         "flamingo_balance" : {"age": age, "balance_errors": flamingo_test.process()},
     }
     # Save to a JSON file
-    json_file_path = "backend/outputs/scores_results_age5_8.json"
-    with open(json_file_path, "w") as json_file:
-        json.dump(score_results, json_file, indent=4)
+    with open(os.path.join(output_path , 'scores_results_age5_8.json'), "w") as json_file:
+        json.dump(age_range_result, json_file, indent=4)
 
     return age_range_result
 
@@ -29,9 +29,8 @@ def process_age9_18(push_ups_path , curl_ups_path, output_path, age):
         #"run_600m" : {"age": age, "total_time_ms": flamingo_test.balance_loss()},
     }
     # Save to a JSON file
-    json_file_path = "backend/outputs/scores_results_age9_18.json"
-    with open(json_file_path, "w") as json_file:
-        json.dump(score_results, json_file, indent=4)
+    with open(os.path.join(output_path , 'scores_results_age9_18.json'), "w") as json_file:
+        json.dump(age_range_result, json_file, indent=4)
 
     return age_range_result
 

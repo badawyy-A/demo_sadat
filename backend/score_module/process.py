@@ -1,5 +1,6 @@
 import json
 from score_calculator import *
+import os
 
 # Helper function to load reference data
 def load_json(filepath):
@@ -34,6 +35,6 @@ def process_age_range(input_path, output_path, age_group):
         raise ValueError("Invalid age group. Choose '5-8' or '9-18'.")
 
     processor.process_tests()
-    with open(output_path, "w") as f:
+    with open(os.path.join(output_path , f'{age_group}_score_result.json' ), "w") as f:
         json.dump(processor.results, f, indent=4)
 
