@@ -23,14 +23,22 @@ user2_data = {
     "curlup_video_path":""
 }
 
+# Load all reference data once (Improves efficiency)
+REFERENCE_DATA = {
+    "plate": load_json("score_module/reference_data/plate.json"),
+    "balance": load_json("score_module/reference_data/balance.json"),
+    "curl_up": load_json("score_module/reference_data/curl_up.json"),
+    "push_up": load_json("score_module/reference_data/pushUp.json"),
+    "run": load_json("score_module/reference_data/run.json"),
+    "speed": load_json("score_module/reference_data/speed.json"),
+}
 
 
-
-def video_processing(user_data , output_path ):
+def video_processing(user_data , output_path , REFERENCE_DATA ):
     if user_data['age'] > 8 :
         process_age9_18(user_data['pushup_video_path'] , user_data['curlup_video_path'] ,output_path, user_data['age'])
         cv_result_path = os.path.join(output_path , 'scores_results_age9_18.json')
-        process_age_range(cv_result_path ,output_path , '9-18' )
+        process_age_range(cv_result_path ,output_path , '9-18' , REFERENCE_DATA )
         score_result_path = os.path.join(output_path , '9_18_score_result.json' )
         score_json = load_json(score_result_path)
         rec_class = recomandations({user_data**score_json}) 
@@ -39,7 +47,7 @@ def video_processing(user_data , output_path ):
     else:
         process_age5_8(user_data['plate_video_path'] , user_data['balance_video_path'] ,output_path, user_data['age'])
         cv_result_path = os.path.join(output_path , 'scores_results_age5_8.json')
-        process_age_range(cv_result_path ,output_path , '5-8' )
+        process_age_range(cv_result_path ,output_path , '5-8' , REFERENCE_DATA )
         score_result_path = os.path.join(output_path , '5_8_score_result.json' )
         score_json = load_json(score_result_path)
         rec_class = recomandations({user_data**score_json}) 
