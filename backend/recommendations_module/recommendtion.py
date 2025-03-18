@@ -2,9 +2,6 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
-
-api_key = os.environ.get("GEMINI_API_KEY")
 
 class recomandations:
     def __init__(self , user_input , api_key):
@@ -84,7 +81,3 @@ class recomandations:
         return response.content
 
 
-input_json = "{\n         \"age\":12\n        \"curl_ups\": {\n          \"score\": 4.8,\n          \"level\": \"L2 (Must Improve)\"\n        },\n        \"push_ups\": {\n          \"score\": 2,\n          \"level\": \"L1 (Work Harder)\"\n        },\n        \"run_600m\": {\n          \"score\": 7.6,\n          \"level\": \"L4 (Good)\"\n        },\n        \"dash_50m\": {\n          \"score\": 6.9,\n          \"level\": \"L3 (Can do Better)\"\n        }\n      }"
-
-rec = recomandations(input_json)
-rec.get_response()
