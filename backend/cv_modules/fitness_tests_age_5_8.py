@@ -1,11 +1,11 @@
-from pose_model import process_video_pose_estimation
+from .pose_model import process_video_pose_estimation
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.signal import find_peaks
 import time
 import cv2
 import numpy as np
-import time
+import json
 
 # Coordination (Plate Tapping Test)
 
@@ -83,6 +83,8 @@ class PlateTappingTest:
         self.df['cycle_status'] = 'in-progress'
         self.df['frame_count'] = 0
         self.df['duration_sec'] = 0
+        self.df['duration_sec'] = self.df['duration_sec'].astype(float)  # Convert column to float
+
         self.df['cycle'] = 0  
 
         indices = self.df[self.df['position'] != 'on-move'].index.tolist()
@@ -108,21 +110,15 @@ class PlateTappingTest:
         self.filter_positions()
         self.find_starting_tap()
         self.detect_cycles()
-        self.total_duration = self.df['duration_sec'].sum().round(2)
+        self.total_duration = ((self.df['duration_sec'].sum()) * 1000).round(2)
 
         return self.total_duration
 
-# Example usage:
-"""video_path = "plate-tapping/plate_21.mp4"
+"""# Example usage:
+video_path = "test_videos/plate_g.mp4"
 test = PlateTappingTest(video_path)
 result = test.run_test()
-print(result)
-"""
-
-
-
-# Balance (Flamingo Balance Test)
-
+print(result)"""
 
 
 # another approch

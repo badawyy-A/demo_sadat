@@ -1,6 +1,6 @@
 
 
-from pose_model import process_video_pose_estimation
+from .pose_model import process_video_pose_estimation
 
 #Use a Savgol filter to smooth the data.
 from scipy.signal import savgol_filter

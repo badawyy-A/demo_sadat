@@ -1,0 +1,10 @@
+{
+    "plate_tapping": {
+        "age": 6,
+        "total_time_ms": 13266.67
+    },
+    "flamingo_balance": {
+        "age": 6,
+        "balance_errors": 10
+    }
+}
