@@ -1,39 +1,61 @@
-// src/pages/UserInput.jsx
-import React, { useContext } from 'react';
-import { useNavigate } from 'react-router-dom'; // For navigation
-import { motion } from 'framer-motion'; // For animations
-import { AssessmentContext } from '../context/AssessmentContext'; // Context for user data
-import { calculateBMI, getBMICategory } from '../utils/bmiCalculator'; // BMI utilities
-import BMIDisplay from '../components/results/BMIDisplay'; // Component to display BMI
+import React, { useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { AssessmentContext } from '../context/AssessmentContext';
+import { calculateBMI, getBMICategory } from '../utils/bmiCalculator';
+import BMIDisplay from '../components/results/BMIDisplay';
+import { sendUserInput } from '../service/api';
 
 const UserInput = () => {
-  const { userData, updateUserData } = useContext(AssessmentContext); // Access user data context
-  const navigate = useNavigate(); // Hook for navigation
+  const { userData, updateUserData } = useContext(AssessmentContext);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState(null); // Stores success/error message
 
-  // Handle form input changes
+  // Handle input changes and update the state
   const handleChange = (e) => {
     const { name, value } = e.target;
     updateUserData({ [name]: value });
   };
 
-  // Handle BMI calculation
-  const handleCalculateBMI = (e) => {
+  // Handle BMI Calculation and API request
+  const handleCalculateBMI = async (e) => {
     e.preventDefault();
-    // Calculate BMI and category
-    const bmi = calculateBMI(parseFloat(userData.weight), parseFloat(userData.height));
-    const bmiCategory = getBMICategory(bmi, parseInt(userData.age), userData.gender);
-    // Update context with BMI data
-    updateUserData({ bmi, bmiCategory });
+    setLoading(true);
+    setMessage(null); // Clear previous messages
+
+    try {
+      // Calculate BMI and determine category
+      const bmi = calculateBMI(parseFloat(userData.weight), parseFloat(userData.height));
+      const bmiCategory = getBMICategory(bmi, parseInt(userData.age), userData.gender);
+
+      updateUserData({ bmi, bmiCategory });
+
+      // Send user data to backend API
+      const response = await sendUserInput({
+        age: userData.age,
+        gender: userData.gender,
+        weight: userData.weight,
+        height: userData.height,
+      });
+
+      // Display success message
+      setMessage({ type: 'success', text: `Success: ${response.message}` });
+    } catch (err) {
+      // Display error message
+      setMessage({ type: 'error', text: 'Failed to send user data. Please try again.' });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Handle navigation to the next page
+  
   const handleContinue = () => {
     // Navigate to video upload page
     navigate('/video-upload');
   };
 
   return (
-    // Animated container for form
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -42,10 +64,9 @@ const UserInput = () => {
     >
       <h1 className="text-3xl font-bold mb-6">Candidate Details</h1>
 
-      {/* Form card */}
       <div className="card mb-8">
         <form onSubmit={handleCalculateBMI}>
-          {/* Full Name input */}
+          {/* Full Name Field */}
           <div className="form-group">
             <label htmlFor="name" className="form-label">Full Name</label>
             <input
@@ -59,7 +80,7 @@ const UserInput = () => {
             />
           </div>
 
-          {/* Age and Gender inputs */}
+          {/* Age and Gender Fields */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="form-group">
               <label htmlFor="age" className="form-label">Age (5-18 years)</label>
@@ -92,7 +113,7 @@ const UserInput = () => {
             </div>
           </div>
 
-          {/* Weight and Height inputs */}
+          {/* Weight and Height Fields */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="form-group">
               <label htmlFor="weight" className="form-label">Weight (kg)</label>
@@ -126,20 +147,26 @@ const UserInput = () => {
             </div>
           </div>
 
-          {/* Button to calculate BMI */}
+          {/* Submit Button */}
           <div className="mt-6">
-            <button type="submit" className="btn-primary w-full">
-              Calculate BMI
+            <button type="submit" className="btn-primary w-full" disabled={loading}>
+              {loading ? 'Submitting...' : 'Calculate BMI'}
             </button>
           </div>
+
+          {/* Display Success/Error Message */}
+          {message && (
+            <p className={`mt-4 p-2 rounded text-center ${message.type === 'success' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'}`}>
+              {message.text}
+            </p>
+          )}
         </form>
       </div>
 
-      {/* Display BMI results if calculated */}
+      {/* BMI Display & Continue Button */}
       {userData.bmi && (
         <>
           <BMIDisplay bmi={userData.bmi} category={userData.bmiCategory} />
-          {/* Button to continue to the next page */}
           <div className="mt-6">
             <button onClick={handleContinue} className="btn-primary w-full">
               Continue
@@ -151,4 +178,4 @@ const UserInput = () => {
   );
 };
 
-export default UserInput; // Export the component
+export default UserInput;
