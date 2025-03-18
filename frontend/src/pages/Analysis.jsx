@@ -24,10 +24,6 @@ const analyzeVideo = (videoFile, testType, userData) => {
         score = gender === 'male' ? 
           Math.floor(Math.random() * 20) + 70 : 
           Math.floor(Math.random() * 20) + 65;
-      } else if (testType === 'flexibility') {
-        score = gender === 'female' ? 
-          Math.floor(Math.random() * 20) + 75 : 
-          Math.floor(Math.random() * 20) + 65;
       } else if (testType === 'cardiovascular') {
         score = Math.floor(Math.random() * 30) + 60; // 60-90
       } else if (testType === 'speed') {
@@ -95,7 +91,6 @@ const getTestName = (testType) => {
     coordination: 'Coordination (Plate Tapping Test)',
     balance: 'Balance (Flamingo Balance Test)',
     muscularStrength: 'Muscular Strength (Curl-up and Push-up)',
-    flexibility: 'Flexibility (Sit and Reach Test)',
     cardiovascular: 'Cardiovascular Endurance (600m Run/Walk)',
     speed: 'Speed (50m Dash)'
   };

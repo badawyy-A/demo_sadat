@@ -46,7 +46,6 @@ const Results = () => {
           coordination: 'Coordination',
           balance: 'Balance',
           muscularStrength: 'Strength',
-          flexibility: 'Flexibility',
           cardiovascular: 'Endurance',
           speed: 'Speed'
         };
@@ -109,7 +108,6 @@ const Results = () => {
           coordination: 'Coordination',
           balance: 'Balance',
           muscularStrength: 'Muscular Strength',
-          flexibility: 'Flexibility',
           cardiovascular: 'Cardiovascular Endurance',
           speed: 'Speed'
         };
