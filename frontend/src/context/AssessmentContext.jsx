@@ -22,7 +22,7 @@ export const AssessmentProvider = ({ children }) => {
     coordination: null,
     balance: null,
     muscularStrength: null,
-    flexibility: null,
+
     cardiovascular: null,
     speed: null
   });
@@ -68,7 +68,6 @@ export const AssessmentProvider = ({ children }) => {
       coordination: null,
       balance: null,
       muscularStrength: null,
-      flexibility: null,
       cardiovascular: null,
       speed: null
     });

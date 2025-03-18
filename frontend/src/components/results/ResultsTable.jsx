@@ -22,7 +22,6 @@ const ResultsTable = ({ userData, testResults }) => {
       coordination: 'Coordination',
       balance: 'Balance',
       muscularStrength: 'Muscular Strength',
-      flexibility: 'Flexibility',
       cardiovascular: 'Cardiovascular Endurance',
       speed: 'Speed'
     };

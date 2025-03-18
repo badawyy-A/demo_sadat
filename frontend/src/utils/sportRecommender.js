@@ -7,7 +7,6 @@ const sportsDatabase = [
       cardiovascular: 0.9,
       speed: 0.8,
       coordination: 0.7,
-      flexibility: 0.5,
       balance: 0.6,
       muscularStrength: 0.6,
     },
@@ -21,7 +20,6 @@ const sportsDatabase = [
     attributes: {
       cardiovascular: 0.9,
       muscularStrength: 0.7,
-      flexibility: 0.8,
       coordination: 0.6,
       balance: 0.5,
       speed: 0.7,
@@ -39,7 +37,6 @@ const sportsDatabase = [
     name: "Gymnastics",
     attributes: {
       balance: 0.9,
-      flexibility: 0.9,
       muscularStrength: 0.8,
       coordination: 0.9,
       speed: 0.6,
@@ -58,7 +55,6 @@ const sportsDatabase = [
       cardiovascular: 0.8,
       muscularStrength: 0.7,
       balance: 0.7,
-      flexibility: 0.5,
     },
     description:
       "A team sport requiring speed, coordination and strategic play.",
@@ -71,7 +67,6 @@ const sportsDatabase = [
       coordination: 0.9,
       speed: 0.8,
       cardiovascular: 0.7,
-      flexibility: 0.7,
       balance: 0.8,
       muscularStrength: 0.6,
     },
@@ -85,7 +80,6 @@ const sportsDatabase = [
       speed: 0.9,
       cardiovascular: 0.9,
       muscularStrength: 0.8,
-      flexibility: 0.7,
       coordination: 0.6,
       balance: 0.6,
     },
@@ -99,7 +93,6 @@ const sportsDatabase = [
     attributes: {
       balance: 0.9,
       coordination: 0.8,
-      flexibility: 0.8,
       muscularStrength: 0.8,
       speed: 0.7,
       cardiovascular: 0.7,
@@ -116,7 +109,6 @@ const sportsDatabase = [
       muscularStrength: 0.7,
       speed: 0.7,
       cardiovascular: 0.7,
-      flexibility: 0.6,
       balance: 0.7,
     },
     description: "A team sport where players hit a ball over a net.",
@@ -126,7 +118,6 @@ const sportsDatabase = [
   {
     name: "Dance",
     attributes: {
-      flexibility: 0.9,
       coordination: 0.9,
       balance: 0.9,
       cardiovascular: 0.7,
@@ -144,7 +135,6 @@ const sportsDatabase = [
       cardiovascular: 0.9,
       coordination: 0.7,
       balance: 0.7,
-      flexibility: 0.6,
       speed: 0.6,
     },
     description: "A water sport using oars to propel a boat.",

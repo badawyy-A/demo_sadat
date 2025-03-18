@@ -33,7 +33,6 @@ const VideoUpload = () => {
   // Define tests for senior age group
   const seniorTests = [
     { id: 'muscularStrength', name: 'Muscular Strength', description: 'Curl-up and Push-up Tests' },
-    { id: 'flexibility', name: 'Flexibility', description: 'Sit and Reach Test' },
     { id: 'cardiovascular', name: 'Cardiovascular Endurance', description: '600m Run/Walk Test' },
     { id: 'speed', name: 'Speed', description: '50m Dash Test' }
   ];
