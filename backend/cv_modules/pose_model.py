@@ -2,7 +2,22 @@ import pandas as pd
 import cv2
 from ultralytics import YOLO
 
+#done
+def estimate_foot_position(ankle_x, ankle_y, knee_y):
+    """
+    Estimate the position of the two feet
+    kp17 -> right foot
+    kp18 -> left foot
+    """
+    if ankle_x is None and ankle_y is None or knee_y is None:
+        return None, None
 
+    leg_length = abs(knee_y - ankle_y)
+    offset = int(leg_length * 0.3)
+    foot_y = ankle_y + offset
+    foot_x = ankle_x
+
+    return foot_x, foot_y
 
 # done
 def create_pose_dataframe(results, frame_idx=0):
@@ -21,23 +36,23 @@ def create_pose_dataframe(results, frame_idx=0):
     """
 
     frame_indices = []
-    player_ids = []
     x1_list = []
     y1_list = []
     x2_list = []
     y2_list = []
     kp_x_lists = [[] for _ in range(17)]
     kp_y_lists = [[] for _ in range(17)]
+    kp_x17_list, kp_y17_list = [], []  # Right Foot
+    kp_x18_list, kp_y18_list = [], []  # Left Foot
 
     if results and results.boxes:
         for res in results:
-            if res.boxes and res.keypoints and res.boxes.cls[0] == 0:
+            if res.boxes and res.keypoints and res.boxes.cls[0] == 0: #cls[0]--> class id 0 for person detection
                 box = res.boxes.xyxy[0]
                 keypoints = res.keypoints.xy[0]
                 track_id = res.boxes.id.cpu().numpy()[0] if res.boxes.id is not None else -1
 
                 frame_indices.append(frame_idx)
-                player_ids.append(track_id)
                 x1_list.append(box[0].item())
                 y1_list.append(box[1].item())
                 x2_list.append(box[2].item())
@@ -46,13 +61,23 @@ def create_pose_dataframe(results, frame_idx=0):
                 for i in range(17):
                     kp_x_lists[i].append(keypoints[i][0].item())
                     kp_y_lists[i].append(keypoints[i][1].item())
-    else:
-        print(f"No person detected in frame {frame_idx} or empty results.")
-        return pd.DataFrame()
 
+                # Estimate right foot (Keypoints 15=Right Ankle, 13=Right Knee)
+                foot_x17, foot_y17 = estimate_foot_position(keypoints[16][0].item(), keypoints[16][1].item(), keypoints[14][1].item())
+                kp_x17_list.append(foot_x17)
+                kp_y17_list.append(foot_y17)
+
+                # Estimate left foot (Keypoints 16=Left Ankle, 14=Left Knee)
+                foot_x18, foot_y18 = estimate_foot_position(keypoints[15][0].item(), keypoints[15][1].item(), keypoints[13][1].item())
+                kp_x18_list.append(foot_x18)
+                kp_y18_list.append(foot_y18)
+
+    else:
+        print(f"No person detected in frame{frame_idx} or empty results.")
+        return pd.DataFrame()
+    
     data = {
         "frame_idx": frame_indices,
-        "player_id": player_ids,
         "x1": x1_list,
         "y1": y1_list,
         "x2": x2_list,
@@ -62,6 +87,12 @@ def create_pose_dataframe(results, frame_idx=0):
     for i in range(17):
         data[f"kp_x{i}"] = kp_x_lists[i]
         data[f"kp_y{i}"] = kp_y_lists[i]
+
+    # Add estimated foot positions
+    data["kp_x17"] = kp_x17_list
+    data["kp_y17"] = kp_y17_list
+    data["kp_x18"] = kp_x18_list
+    data["kp_y18"] = kp_y18_list
 
     df = pd.DataFrame(data)
     return df
@@ -132,12 +163,12 @@ def process_video_pose_estimation(video_path, model_path="yolo11x-pose.pt"):
 
       # <--- REPLACE THIS WITH DESIRED OUTPUT CSV PATH
 
-"""video_file = "E:/manar/data_science/fixedinternship/CV/club_city_project/flamingo/flagb.mp4"  # <--- REPLACE THIS WITH YOUR VIDEO PATH
+# video_file = "test_videos/run.mp4"  # <--- REPLACE THIS WITH YOUR VIDEO PATH
 
-pose_df, FPS = process_video_pose_estimation(video_file)
+# pose_df, FPS = process_video_pose_estimation(video_file)
 
-print(pose_df.info())
-print(pose_df.columns)"""
+# print(pose_df.info())
+# print(pose_df.columns)
 
 
 

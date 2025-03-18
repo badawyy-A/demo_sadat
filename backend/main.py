@@ -61,13 +61,13 @@ if __name__ == '__main__':
     processor = VideoProcessor()
     user2_data = {
         "age": 17,
-        "gender": "male",
+        "gender": "female",
         "weight": "70",
         "height": "180",
-        "pushup_video_path": "cv_modules/test_videos/plate_g.mp4",
-        "curlup_video_path": "cv_modules/test_videos/plate_g.mp4",
-        "run_600m_video_path": "cv_modules/test_videos/plate_g.mp4",
-        "dash_50m_video_path": "cv_modules/test_videos/plate_g.mp4",
+        "pushup_video_path": "cv_modules/test_videos/push_g.mp4",
+        "curlup_video_path": "cv_modules/test_videos/curl_g.mp4",
+        "run_600m_video_path": "cv_modules/test_videos/running.mp4",
+        "dash_50m_video_path": "cv_modules/test_videos/running.mp4",
     }
     
     processor.process_videos(user2_data, 'outputs/data')

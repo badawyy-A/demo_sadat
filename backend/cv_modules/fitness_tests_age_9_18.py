@@ -70,26 +70,20 @@ class PushupAnalyzer:
         self.peaks, _ = find_peaks(self.df['elbow_angle'], prominence=7)
         self.valleys, _ = find_peaks(-self.df['elbow_angle'], prominence=20)
         
-        frames_diff_peak_valley = self.peaks - self.valleys
+        #frames_diff_peak_valley = self.peaks - self.valleys
+        
+        
+        min_len = min(len(self.peaks), len(self.valleys))
+        peaks_e, valleys_e = self.peaks[:min_len], self.valleys[:min_len]
+
+        
+        frames_diff_peak_valley = peaks_e - valleys_e
         if  self.valleys[0] < self.peaks[0] and self.valleys[0] > (frames_diff_peak_valley.sum() / len(frames_diff_peak_valley)):
             self.peaks = np.insert(self.peaks, 0, 0)
         
         self.df.loc[self.peaks, 'pushup_stage'] = 'Up'
         self.df.loc[self.valleys, 'pushup_stage'] = 'Down'
 
-
-
-        if len(self.valleys) == 0 or len(self.peaks) == 0:
-            print("Warning: No valleys or peaks detected")
-            return
-
-        frames_diff_peak_valley = self.peaks - self.valleys
-
-        if len(frames_diff_peak_valley) > 0 and self.valleys[0] < self.peaks[0] and self.valleys[0] > (frames_diff_peak_valley.sum() / len(frames_diff_peak_valley)):
-            self.peaks = np.insert(self.peaks, 0, 0)
-
-        self.df.loc[self.peaks, 'pushup_stage'] = 'Up'
-        self.df.loc[self.valleys, 'pushup_stage'] = 'Down'
 
 
     def plot(self):
@@ -355,7 +349,7 @@ class CurlUpsTest:
         self.preprocess()
         self.calculate_angles()
         self.detect_up_down_positions()
-        #self.plot()
+        # self.plot()
         self.duration_speed_comment()
         self.pushup_cycle_speed()
         return len(self.df[self.df['cycle_duration'] != 0])
@@ -475,7 +469,7 @@ class RunningAnalysis:
                 current_distance = math.sqrt((foot_x - other_x) ** 2 + (foot_y - other_y) ** 2)
                 self.max_step_distance = max(self.max_step_distance, current_distance)
 
-        return self.total_time * 1000 #Milli Seconds
+        return self.total_distance , self.total_time * 1000#Milli Seconds
 
 class Running_Score:
     def __init__(self, video_path):
@@ -533,11 +527,12 @@ class Running_Score:
         return  self.total_time , self.total_distance
 
 # Usage example:
-"""video_path = "curl/curl_g.mp4"
-curlups = CurlUpsTest(video_path)
-reps, total_duration = curlups.process()
-print(reps, total_duration)
+
+"""video_path = "test_videos/running.mp4"
+run_walk_600 = Running_Score(video_path)
+total_time_ms1 , total_distance1 = run_walk_600.process_video()
+
 """
 
-# speed test (distance & duration)
+
 

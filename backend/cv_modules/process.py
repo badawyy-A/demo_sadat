@@ -34,6 +34,7 @@ def process_age9_18(push_ups_path , curl_ups_path, run_walk_video_path , speed_v
 
     walk_600_result = (total_time_ms1 * 600) / total_distance1
     dash_50_result = (total_time_ms2 * 50) / total_distance2
+    
     age_range_result = {  
         "push_ups": {"age": age, "repetitions": int(push_ups_test.process())},
         "curl_ups" : {"age": age, "repetitions": int(curl_ups_test.process())},
