@@ -10,6 +10,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter, find_peaks
+import cv2
+import math
 
 # done
 class PushupAnalyzer:
@@ -74,6 +76,21 @@ class PushupAnalyzer:
         
         self.df.loc[self.peaks, 'pushup_stage'] = 'Up'
         self.df.loc[self.valleys, 'pushup_stage'] = 'Down'
+
+
+
+        if len(self.valleys) == 0 or len(self.peaks) == 0:
+            print("Warning: No valleys or peaks detected")
+            return
+
+        frames_diff_peak_valley = self.peaks - self.valleys
+
+        if len(frames_diff_peak_valley) > 0 and self.valleys[0] < self.peaks[0] and self.valleys[0] > (frames_diff_peak_valley.sum() / len(frames_diff_peak_valley)):
+            self.peaks = np.insert(self.peaks, 0, 0)
+
+        self.df.loc[self.peaks, 'pushup_stage'] = 'Up'
+        self.df.loc[self.valleys, 'pushup_stage'] = 'Down'
+
 
     def plot(self):
         """Visualize detected peaks and valleys."""
@@ -164,7 +181,7 @@ class PushupAnalyzer:
         self.apply_smoothing()
         self.calculate_angles()
         self.detect_up_down_positions()
-        self.plot()
+        #self.plot()
         self.check_performance("elbow")
         self.calculate_durations()
         self.check_performance("hip")
@@ -338,10 +355,182 @@ class CurlUpsTest:
         self.preprocess()
         self.calculate_angles()
         self.detect_up_down_positions()
-        self.plot()
+        #self.plot()
         self.duration_speed_comment()
         self.pushup_cycle_speed()
         return len(self.df[self.df['cycle_duration'] != 0])
+
+
+# speed test (distance & duration)
+class RunningAnalysis:
+    def __init__(self, frame_rate):
+        self.frame_rate = frame_rate
+        self.foot_strike_active = False  # Flag to track if a step is being measured
+        self.last_foot = None  # Store last foot that made a strike
+        self.max_step_distance = 0  # Step distance in pixels (reset per step)
+        self.step_count = 0  # Number of steps taken
+        self.step_distances = {}  # Dictionary to store step distances
+        self.last_foot_strikes = {}  # Store last strike positions for each foot
+        self.total_distance = 0 #Total Distance Covered
+        self.total_time = 0 #Total time of the run
+        self.step_times = []  # Store time taken per step
+        self.last_step_frame = None  # Store frame index of last step
+    
+    def detect_strike(self, pose_row, y2, threshold=10):
+        """
+        Detect the strike of the feet on the ground and which leg strikes
+        """
+        strikes = {}
+
+        # Get Right Foot Keypoint
+        right_x = pose_row.get('kp_x17')
+        right_y = pose_row.get('kp_y17')
+
+        if right_y and abs(right_y - y2) < threshold:
+            strikes["Right"] = (int(right_x), int(right_y))
+
+
+        # Get Left Foot Keypoint
+        left_x = pose_row.get('kp_x18')
+        left_y = pose_row.get('kp_y18')
+
+        if left_y and abs(left_y - y2) < threshold:
+            strikes["Left"] = (int(left_x), int(left_y))
+
+
+        return strikes
+    
+    def calculate_scaling_factor(self, runner_height_real, pose_row):
+        """
+        Scaling Factor for the calculations based on the runner height
+        """
+       
+        shoulder_y = pose_row.get('kp_y6') 
+        ankle_y = max(pose_row.get('kp_y15'), pose_row.get('kp_y16'))
+
+        # Compute shoulder-to-ankle distance in pixels
+        height_pixels = abs(ankle_y - shoulder_y)
+
+        if height_pixels == 0:  # Avoid division by zero
+            return None
+
+        # Estimate total height in pixels
+        estimated_height_pixels = height_pixels / 0.82  
+
+        # Compute scaling factor
+        scaling_factor = runner_height_real / estimated_height_pixels  
+
+        return scaling_factor  # Return the scaling factor
+    
+    
+    def calculate_total_distance(self, strikes, runner_height_real, pose_row, frame_idx):
+        """
+        Calculate total distance covered by the runner and calculate total time taken for the run
+        """
+        if not strikes:
+            return self.total_distance, self.total_time
+
+        scaling_factor = self.calculate_scaling_factor(runner_height_real, pose_row)
+
+        if scaling_factor is None:
+            return self.total_distance, self.total_time
+
+        time_per_step = None  # Initialize time variable
+
+        for foot_label, (foot_x, foot_y) in strikes.items():
+            opposite_foot = "Left" if foot_label == "Right" else "Right"
+
+            if not self.foot_strike_active:
+                # First foot strike: Initialize tracking, but don't count the first step yet
+                self.foot_strike_active = True
+                self.last_foot = foot_label
+                self.max_step_distance = 0  # Reset step distance tracking
+
+            else:
+                if foot_label != self.last_foot and opposite_foot in self.last_foot_strikes:
+                    # Ensure both feet have been recorded before counting a step
+                    real_distance = self.max_step_distance * scaling_factor
+
+                    # Only add nonzero distances
+                    if real_distance > 0:
+                        self.step_count += 1
+                        self.step_distances[self.step_count] = real_distance
+                        self.total_distance += real_distance
+
+                        # Calculate time per step
+                        if self.last_step_frame is not None:
+                            time_per_step = (frame_idx - self.last_step_frame) / self.frame_rate
+                            self.step_times.append(time_per_step)
+                            self.total_time += time_per_step  # Increment total time
+
+                        self.last_step_frame = frame_idx  # Update last step frame
+
+                    self.foot_strike_active = False  # Reset for next step
+                    self.max_step_distance = 0  # Reset max step distance
+
+            self.last_foot_strikes[foot_label] = (foot_x, foot_y)
+
+            if self.foot_strike_active and opposite_foot in self.last_foot_strikes:
+                other_x, other_y = self.last_foot_strikes[opposite_foot]
+                current_distance = math.sqrt((foot_x - other_x) ** 2 + (foot_y - other_y) ** 2)
+                self.max_step_distance = max(self.max_step_distance, current_distance)
+
+        return self.total_time * 1000 #Milli Seconds
+
+class Running_Score:
+    def __init__(self, video_path):
+        
+        try:
+            self.pose_df, self.FPS = process_video_pose_estimation(video_path)
+            if self.pose_df.empty:
+                print("⚠ Warning: The DataFrame is empty! Check process_video_pose_estimation.")
+        except Exception as e:
+            print(f"Error processing video: {e}")
+        self.video_path = video_path
+        #self.pose_csv_path = pose_csv_path
+        self.output_path = 'output_run_kid.avi'
+
+        # Initialize video capture
+        self.cap = cv2.VideoCapture(self.video_path)
+        if not self.cap.isOpened():
+            raise FileNotFoundError("Error: Could not open video file.")
+        
+        self.frame_width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        self.frame_height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        self.fps = int(self.cap.get(cv2.CAP_PROP_FPS))
+
+        self.running_test = RunningAnalysis(self.fps)
+        self.total_distance = 0
+        self.total_time = 0
+        
+        # Initialize video writer
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        self.out = cv2.VideoWriter(self.output_path, fourcc, self.fps, (self.frame_width, self.frame_height))
+
+    def annotate_frame(self, frame, frame_idx):
+        pose_frame_data = self.pose_df[self.pose_df['frame_idx'] == frame_idx]
+
+        pose_row = pose_frame_data.iloc[0]
+
+        strikes = self.running_test.detect_strike(pose_row, pose_row['y2'])
+        self.total_distance, self.total_time = self.running_test.calculate_total_distance(strikes, 130, pose_row, frame_idx)
+            
+        return frame  
+    
+    def process_video(self):
+        frame_idx = 0
+        while True:
+            ret, frame = self.cap.read()
+            if not ret:
+                break
+            frame = self.annotate_frame(frame, frame_idx)
+            self.out.write(frame)
+            frame_idx += 1
+
+        self.cap.release()
+        self.out.release()
+        cv2.destroyAllWindows()
+        return  self.total_time , self.total_distance
 
 # Usage example:
 """video_path = "curl/curl_g.mp4"
