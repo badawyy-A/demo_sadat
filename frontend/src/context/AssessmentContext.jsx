@@ -17,30 +17,42 @@ export const AssessmentProvider = ({ children }) => {
     bmiCategory: ''
   });
 
-  // State for test results (fitness scores)
-  const [testResults, setTestResults] = useState({
-    coordination: null,
-    balance: null,
-    curl_up: null,
-    push_up: null,
-    cardiovascular: null,
-    speed: null
-  });
-
-  // State for uploaded videos
+  // Videos state
   const [videos, setVideos] = useState({});
 
-  // State for sport recommendations
+  // Test results state
+  const [testResults, setTestResults] = useState({});
+
+  // Sport recommendations state
   const [sportRecommendations, setSportRecommendations] = useState([]);
 
-  // Update user data with new values
+  // Update user data
   const updateUserData = (data) => {
-    setUserData({ ...userData, ...data });
+    setUserData(prevData => ({
+      ...prevData,
+      ...data
+    }));
   };
 
-  // Update test results with new values
+  // Update user BMI
+  const updateUserBMI = (bmi) => {
+    setUserData(prevData => ({
+      ...prevData,
+      bmi
+    }));
+  };
+
+  // Update videos
+  const updateVideos = (newVideos) => {
+    setVideos(prevVideos => ({
+      ...prevVideos,
+      ...newVideos
+    }));
+  };
+
+  // Update test results
   const updateTestResults = (results) => {
-    setTestResults({ ...testResults, ...results });
+    setTestResults(results);
   };
 
   // Add or update a video for a specific test type
@@ -53,30 +65,22 @@ export const AssessmentProvider = ({ children }) => {
     setSportRecommendations(recommendations);
   };
 
-  // Reset all assessment data to initial state
+  // Reset assessment data
   const resetAssessment = () => {
     setUserData({
       name: '',
       age: '',
       gender: '',
-      weight: '',
       height: '',
-      bmi: null,
+      weight: '',
+      bmi: '',
       bmiCategory: ''
     });
-    setTestResults({
-      coordination: null,
-      balance: null,
-      curl_up: null,
-      push_up: null,
-      cardiovascular: null,
-      speed: null
-    });
     setVideos({});
+    setTestResults({});
     setSportRecommendations([]);
   };
 
-  // Provide context values to children
   return (
     <AssessmentContext.Provider
       value={{
@@ -85,6 +89,8 @@ export const AssessmentProvider = ({ children }) => {
         videos,
         sportRecommendations,
         updateUserData,
+        updateUserBMI,
+        updateVideos,
         updateTestResults,
         addVideo,
         updateSportRecommendations,
