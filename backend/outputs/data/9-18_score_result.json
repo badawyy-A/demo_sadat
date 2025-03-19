@@ -1,0 +1,18 @@
+{
+    "curl_ups": {
+        "score": 2,
+        "level": "L1"
+    },
+    "push_ups": {
+        "score": 2,
+        "level": "L1"
+    },
+    "run_600m": {
+        "score": 10,
+        "level": "L7"
+    },
+    "dash_50m": {
+        "score": 10,
+        "level": "L7"
+    }
+}

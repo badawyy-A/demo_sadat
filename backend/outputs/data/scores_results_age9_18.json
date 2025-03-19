@@ -1,0 +1,18 @@
+{
+    "push_ups": {
+        "age": 17,
+        "repetitions": 0
+    },
+    "curl_ups": {
+        "age": 17,
+        "repetitions": 33
+    },
+    "run_600m": {
+        "age": 17,
+        "total_time_ms": 0
+    },
+    "dash_50m": {
+        "age": 17,
+        "total_time_ms": 0
+    }
+}
