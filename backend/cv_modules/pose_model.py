@@ -172,4 +172,3 @@ def process_video_pose_estimation(video_path, model_path="yolo11x-pose.pt"):
 
 
 
-

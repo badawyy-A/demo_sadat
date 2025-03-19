@@ -3,13 +3,10 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AssessmentContext } from '../context/AssessmentContext'; // Context for user data and videos
-import { uploadVideos } from '../service/api'; // Import the API function
 
 const VideoUpload = () => {
   const { userData, videos, addVideo } = useContext(AssessmentContext); // Access context data
   const [ageGroup, setAgeGroup] = useState(null); // State for age group
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const navigate = useNavigate(); // Hook for navigation
 
   // Determine age group based on user age
@@ -49,26 +46,9 @@ const VideoUpload = () => {
   };
 
   // Handle form submission to navigate to analysis
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
-    
-    try {
-      // Determine the appropriate age range format for the API
-      const apiAgeRange = ageGroup === 'junior' ? '5-8' : '9-18';
-      
-      // Call the API function to upload videos
-      await uploadVideos(apiAgeRange, videos);
-      
-      // If successful, navigate to analysis page
-      navigate('/analysis');
-    } catch (err) {
-      // Display error message to the user
-      setError(err.response?.data?.detail || 'Failed to upload videos. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+    navigate('/analysis');
   };
 
   // Show loading state if age group not determined
@@ -92,12 +72,6 @@ const VideoUpload = () => {
         Based on {userData.name}'s age ({userData.age} years), please upload videos for the following tests:
       </p>
 
-      {/* Display error message if there's an error */}
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          <strong>Error:</strong> {error}
-        </div>
-      )}
       {/* Form card for video uploads */}
       <div className="card mb-8">
         <form onSubmit={handleSubmit}>
@@ -160,9 +134,9 @@ const VideoUpload = () => {
             <button
               type="submit"
               className="btn-primary"
-              disabled={Object.keys(videos).length === 0 || loading}
+              disabled={Object.keys(videos).length === 0} // Disable if no videos uploaded
             >
-              {loading ? 'Uploading...' : 'Analyze Videos'}
+              Analyze Videos
             </button>
           </div>
         </form>

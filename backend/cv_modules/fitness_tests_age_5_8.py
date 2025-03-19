@@ -292,4 +292,3 @@ class FlamingoBalance_Score:
 fall_count = video_annotator.process()
 print("fall_count: ",fall_count)"""
 
-

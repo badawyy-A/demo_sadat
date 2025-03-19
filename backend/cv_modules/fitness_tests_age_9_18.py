@@ -535,4 +535,3 @@ total_time_ms1 , total_distance1 = run_walk_600.process_video()
 """
 
 
-

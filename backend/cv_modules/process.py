@@ -47,4 +47,3 @@ def process_age9_18(push_ups_path , curl_ups_path, run_walk_video_path , speed_v
 
     return age_range_result
 
-
