@@ -4,6 +4,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const USER_INPUT_URL = API_BASE_URL + import.meta.env.VITE_USER_INPUT_ENDPOINT;
 const VIDEO_UPLOAD_URL =
   API_BASE_URL + import.meta.env.VITE_VIDEO_UPLOAD_ENDPOINT;
+const VIDEO_RESULT_URL = API_BASE_URL + import.meta.env.VITE_VIDEO_RESULT;
 
 /**
  * Sends user input data (age, weight, height, gender) to the backend.
@@ -64,4 +65,19 @@ export const uploadVideos = async (ageRange, videos) => {
     );
     throw error;
   }
+};
+
+// Get results
+export const getResults = async () => {
+  const response = await fetch(VIDEO_RESULT_URL, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
+  }
+  return await response.json();
 };
