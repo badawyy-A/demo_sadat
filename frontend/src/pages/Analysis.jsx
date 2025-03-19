@@ -20,15 +20,20 @@ const analyzeVideo = (videoFile, testType, userData) => {
         score = Math.floor(Math.random() * 20) + 70; // 70-90
       } else if (testType === 'balance') {
         score = Math.floor(Math.random() * 25) + 65; // 65-90
-      } else if (testType === 'muscularStrength') {
+      } else if (testType === 'curl_up') {
         score = gender === 'male' ? 
-          Math.floor(Math.random() * 20) + 70 : 
-          Math.floor(Math.random() * 20) + 65;
+          Math.floor(Math.random() * 20) + 70 :  // Male: 70-90
+          Math.floor(Math.random() * 20) + 65;   // Female: 65-85
+      } else if (testType === 'push_up') {
+        score = gender === 'male' ? 
+          Math.floor(Math.random() * 15) + 75 :  // Male: 75-90
+          Math.floor(Math.random() * 15) + 65;   // Female: 65-80
       } else if (testType === 'cardiovascular') {
         score = Math.floor(Math.random() * 30) + 60; // 60-90
       } else if (testType === 'speed') {
         score = Math.floor(Math.random() * 25) + 65; // 65-90
       }
+      
       
       resolve(score);
 }, 1500); // 1.5 seconds delay to simulate processing
@@ -90,7 +95,8 @@ const getTestName = (testType) => {
   const testNames = {
     coordination: 'Coordination (Plate Tapping Test)',
     balance: 'Balance (Flamingo Balance Test)',
-    muscularStrength: 'Muscular Strength (Curl-up and Push-up)',
+    curl_up: 'Muscular Strength (Curl-up)',
+    push_up: 'Muscular Strength (Push-up)',
     cardiovascular: 'Cardiovascular Endurance (600m Run/Walk)',
     speed: 'Speed (50m Dash)'
   };

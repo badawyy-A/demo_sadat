@@ -45,7 +45,8 @@ const Results = () => {
         const testNames = {
           coordination: 'Coordination',
           balance: 'Balance',
-          muscularStrength: 'Strength',
+          curl_up: 'Curl-up',
+          push_up: 'Push-_up',
           cardiovascular: 'Endurance',
           speed: 'Speed'
         };
@@ -107,7 +108,8 @@ const Results = () => {
         const testNames = {
           coordination: 'Coordination',
           balance: 'Balance',
-          muscularStrength: 'Muscular Strength',
+          curl_up: 'Curl-up',
+          push_up: 'Push-up',
           cardiovascular: 'Cardiovascular Endurance',
           speed: 'Speed'
         };

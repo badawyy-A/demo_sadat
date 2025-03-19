@@ -21,7 +21,8 @@ const ResultsTable = ({ userData, testResults }) => {
     const testNames = {
       coordination: 'Coordination',
       balance: 'Balance',
-      muscularStrength: 'Muscular Strength',
+      curl_up: 'Curl-up',
+      push_up: "Push-up",
       cardiovascular: 'Cardiovascular Endurance',
       speed: 'Speed'
     };

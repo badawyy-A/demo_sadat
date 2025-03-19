@@ -21,8 +21,8 @@ export const AssessmentProvider = ({ children }) => {
   const [testResults, setTestResults] = useState({
     coordination: null,
     balance: null,
-    muscularStrength: null,
-
+    curl_up: null,
+    push_up: null,
     cardiovascular: null,
     speed: null
   });
@@ -67,7 +67,8 @@ export const AssessmentProvider = ({ children }) => {
     setTestResults({
       coordination: null,
       balance: null,
-      muscularStrength: null,
+      curl_up: null,
+      push_up: null,
       cardiovascular: null,
       speed: null
     });
