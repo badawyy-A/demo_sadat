@@ -88,9 +88,9 @@ async def user_input(data: Dict[str, Any], request: Request):
 
     return JSONResponse({"message": "User details received", "user_details": user_details}, status_code=200)
 
-
+# to be added
 @app.post("/video_upload/{age_range}")
-async def video_upload(age_range: str, request: Request, plate_video: UploadFile = File(None), balance_video: UploadFile = File(None), pushup_video: UploadFile = File(None), curlup_video: UploadFile = File(None)):
+async def video_upload(age_range: str, request: Request, plate_video: UploadFile = File(None), balance_video: UploadFile = File(None), pushup_video: UploadFile = File(None), curlup_video: UploadFile = File(None), cardiovascular_video: UploadFile = File(None), speed_video: UploadFile = File(None)):
     """Endpoint to upload videos based on age range."""
     if age_range not in ['5-8', '9-18']:
         raise HTTPException(status_code=400, detail="Invalid age range. Must be '5-8' or '9-18'")
@@ -101,9 +101,10 @@ async def video_upload(age_range: str, request: Request, plate_video: UploadFile
         raise HTTPException(status_code=400, detail="User details are required. Please call /user_input endpoint first.")
 
     videos = {}
+    # ,'run_600m_video': run_600m_video, 'dash_50m_video': dash_50m_video  to be added to '9-18'
     uploaded_files = {
         '5-8': {'plate_video': plate_video, 'balance_video': balance_video},
-        '9-18': {'pushup_video': pushup_video, 'curlup_video': curlup_video}
+        '9-18': {'pushup_video': pushup_video, 'curlup_video': curlup_video,'cardiovascular_video': cardiovascular_video, 'speed_video': speed_video}
     }
     required_videos = list(uploaded_files[age_range].keys())
 
@@ -160,12 +161,14 @@ async def get_results(request: Request):
             cv_result = process_age9_18(
                 video_paths['pushup_video_path'],
                 video_paths['curlup_video_path'],
+                video_paths['cardiovascular_video_path'],
+                video_paths['speed_video_path'],
                 output_path,
                 age
             )
             cv_result_path = os.path.join(output_path , 'scores_results_age9_18.json')
             process_age_range(cv_result_path, output_path, '9-18', reference_data)
-            score_result_path = os.path.join(output_path , '9-18_score_result.json' )
+            score_result_path = os.path.join(output_path , '9-18_score_result.json')
             score_json = load_json(score_result_path)
             combined_data = {**user_details, **cv_result, **score_json}
             rec_class = recomandations(json.dumps(combined_data), api_key)

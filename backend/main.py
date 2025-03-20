@@ -54,8 +54,30 @@ class VideoProcessor:
         score_json = load_json(score_result_path)
         rec_class = recomandations({**user_data, **score_json}, self.api_key)
         final_result = rec_class.get_response()
-        print(final_result)
+        
+        if isinstance(final_result, str):
+            recommendations_dict = {}
+            sports_list = final_result.split("\n")  # Split by newline
+                
+            for sport in sports_list:
+                if sport.strip():  # Ensure it's not empty
+                    parts = sport.split(". ", 1)  # Split at first occurrence of ". "
+                    if len(parts) == 2:
+                        key, value = parts
+                        recommendations_dict[key.strip()] = value.strip()
 
+        else:
+            recommendations_dict = {"error": "Unexpected data format"}
+
+        # Save recommendations to JSON
+        rec_output_path = os.path.join(output_path, 'final_recommendations.json')
+        with open(rec_output_path, 'w') as f:
+            json.dump(recommendations_dict, f, indent=4)
+
+        print(recommendations_dict)
+
+
+        
 if __name__ == '__main__':
     processor = VideoProcessor()
     user2_data = {

@@ -1,0 +1,7 @@
+# Ignore virtual environments
+venv/
+__pycache__/
+
+# Ignore uploads and outputs directories (if applicable)
+uploads/
+outputs/
