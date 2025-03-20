@@ -46,7 +46,7 @@ This project is a comprehensive **Fitness Assessment and Sport Recommendation Sy
 * **Dependencies Management:** requirements.txt
 
 ## 📂 Project Structure
-fitness_app/
+```fitness_app/
 ├── .env # Environment variables (Gemini API Key)
 ├── main.py # Main backend logic (VideoProcessor class)
 ├── cv_modules/ # Computer Vision Modules
@@ -74,3 +74,4 @@ fitness_app/
 ├── uploads/ # Temporary storage for user uploads (created automatically)
 ├── outputs/ # Storage for processing results (created automatically)
 └── requirements.txt # Python dependencies
+```
