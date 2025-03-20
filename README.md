@@ -47,31 +47,104 @@ This project is a comprehensive **Fitness Assessment and Sport Recommendation Sy
 
 ## 📂 Project Structure
 ```fitness_app/
-├── .env # Environment variables (Gemini API Key)
-├── main.py # Main backend logic (VideoProcessor class)
-├── cv_modules/ # Computer Vision Modules
-│ ├── init.py
-│ ├── process.py # Video processing dispatcher
-│ ├── fitness_tests_age_5_8.py # CV logic for 5-8 age group
-│ ├── fitness_tests_age_9_18.py # CV logic for 9-18 age group
-│ ├── pose_model.py # YOLOv8 pose estimation
-│ └── yolo11x-pose.pt # YOLOv8 pose estimation model file
-├── score_module/ # Scoring Logic
-│ ├── init.py
-│ ├── process.py # Scoring logic
-│ ├── score_calculator.py # Age specific score calculators (PLACEHOLDER)
-│ └── reference_data/ # Reference data for scoring (PLACEHOLDER)
-│ ├── plate.json # (PLACEHOLDER - Add your actual data)
-│ ├── balance.json # (PLACEHOLDER - Add your actual data)
-│ ├── curl_up.json # (PLACEHOLDER - Add your actual data)
-│ ├── pushUp.json # (PLACEHOLDER - Add your actual data)
-│ ├── run.json # (PLACEHOLDER - Add your actual data)
-│ └── speed.json # (PLACEHOLDER - Add your actual data)
-├── recommendations_module/ # Recommendation Logic (Gemini API)
-│ ├── init.py
-│ └── recommendtion.py
-├── streamlit_app.py # Streamlit application
-├── uploads/ # Temporary storage for user uploads (created automatically)
-├── outputs/ # Storage for processing results (created automatically)
-└── requirements.txt # Python dependencies
+backend/
+├── cv_modules/                 # Computer vision processing modules
+│   ├── test_videos/            # Sample test videos
+│   ├── init.py
+│   ├── fitness_tests_age_5_8.py  # Processing fitness tests for ages 5-8
+│   ├── fitness_tests_age_9_18.py  # Processing fitness tests for ages 9-18
+│   ├── pose_model.py            # Pose estimation model handling
+│   ├── process.py               # Core processing logic
+│
+├── outputs/                     # Stores processed results
+│   ├── 5-8_score_result.json
+│   ├── scores_results_age5_8.json
+│
+├── recommendations_module/       # AI-based sport recommendation
+│   ├── init.py
+│   ├── recommendation.py         # Recommendation logic
+│   ├── test.ipynb                # Jupyter notebook for testing
+│
+├── score_module/                 # Module for handling scores
+├── app.py                         # Streamlit application backend
+├── main.py                        # Main execution script
+├── requirements.txt               # Python dependencies
+├── yolo11x-pose.pt                # Pose detection model
+├── output_balance_kid4.avi        # Example processed video output
+
+Frontend: Implements the user interface with Streamlit and web technologies.
+
+frontend/
+├── public/                       # Public assets
+├── src/                          # Source code for frontend
+├── index.html                    # Frontend main HTML file
+├── Streamlit.py                   # Streamlit UI
+├── package.json                   # Frontend dependencies
+├── package-lock.json              # Dependency lock file
+├── vite.config.js                 # ViteJS configuration
+├── tailwind.config.js             # Tailwind CSS config
+├── eslint.config.js               # ESLint configuration
+├── Dockerfile                     # Docker setup for frontend
+├── README.md                      # Frontend documentation
+├── .gitignore                     # Git ignore file
+├── .env                           # Environment variables
 ```
+## ✅ Installation and Setup
+
+1.  **Clone the Repository:**
+
+    ```bash
+    git clone https://github.com/badawyy-A/demo_sadat.git
+    cd frontend
+    ```
+
+2.  **Create a Virtual Environment (Recommended):**
+
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate  # On Linux/macOS
+    venv\Scripts\activate     # On Windows
+    ```
+
+3.  **Install Dependencies:**
+
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4.  **Download YOLOv8 Model:**
+
+    Download the `yolo11x-pose.pt` file from the official Ultralytics repository (or a suitable alternative YOLOv8 pose estimation model) and place it in the `cv_modules` directory.  *Provide a link to the official download location here if possible.*  If you use a different model, update the `model_path` in `cv_modules/pose_model.py`.
+
+
+
+5.  **Set up the `.env` File:**
+
+    Create a file named `.env` in the root directory of the project.  Add your Gemini API key to this file:
+
+    ```
+    GEMINI_API_KEY=your_actual_api_key_here
+    ```
+
+    Replace `your_actual_api_key_here` with your actual key.
+
+6.  **Add Reference Data (IMPORTANT):**
+    *   Create the files listed above inside `score_module/reference_data/`. Fill them with the proper content.
+    *  Create `score_module/score_calculator.py`, and put the classes `Age5to8` and `Age9to18`.
+
+## ▶️ Running the Application
+
+1.  **Activate the Virtual Environment (if you created one):**
+
+    ```bash
+    source venv/bin/activate  # On Linux/macOS
+    venv\Scripts\activate     # On Windows
+    ```
+
+2.  **Run the Streamlit App:**
+
+    ```bash
+    streamlit run streamlit_app.py
+    ```
+
+    This will start the Streamlit server and open the app in your default web browser.
